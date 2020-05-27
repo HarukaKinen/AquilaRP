@@ -218,7 +218,7 @@ def check_exsit(process_name):
 
 
 def check_update():
-    version = "1.0.1"
+    version = "2.0.0"
     try:
         r = requests.get('https://api.github.com/repos/Kotoki1337/AquilaRP/releases/latest')
         latest = r.json()["tag_name"]
