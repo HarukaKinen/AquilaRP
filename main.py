@@ -182,8 +182,7 @@ def fake_Active():
             if current_active == "play":
                 RPC_osu.update(details = state, state = mode_active, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode, spectate = "any")
             elif current_active == "edit":
-                active = "Modding a Beatmap"
-                RPC_osu.update(details = state, state = active, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+                RPC_osu.update(details = "Idle", large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
             elif current_active == "spectate":
                 RPC_osu.update(details = "Idle", large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
     else:
