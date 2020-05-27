@@ -4,7 +4,7 @@
 
 [![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence) [![license](https://img.shields.io/github/license/qwertyquerty/pypresence.svg?style=for-the-badge)](https://github.com/qwertyquerty/pypresence/blob/master/LICENSE)
 
-# Hows it Work
+## Hows it Work
 
 Get the current game activity through the process title of `osu!.exe`.
 
@@ -12,15 +12,40 @@ Get the current game activity through the process title of `osu!.exe`.
 
 It gets the process title every three seconds, but the occupancy rate in the background is low enough to be ignored.
 
-# Stuff is good, but why
+## Stuff is good, but why
 
 ![](https://i.imgur.com/MVRbjl8.png)
 
-Some people want to show their Rich-Presence but dont want to get a report for it. But at the same time, they really want to show the fact that **I am AQN user**. AquilaRP is for them.
+Some people want to show their Rich-Presence but dont want to get a report for it. But at the same time, they still want to let their friends know what they are doing instead of telling the kids that their username is used for reporting. AquilaRP is for them.
 
-## What will it display
+# What will it display
 
-AquilaRP will not display any ign, only show the server you are currently on. And the beatmap you are currently playing or editing, and which player is spectating by you.
+AquilaRP will not display any ign, only show the beatmap you are currently playing or editing, and which player is spectating by you.
+# Preview
+
+## Fake real osu! Rich-Presence
+
+| State | Real | Fake |
+|:--:|:-:|:-:|
+| Idle/AFK | ![Idle Real](img-for-README/real-Idle.gif) | ![Idle Real](img-for-README/fake-Idle.gif) |
+| In game | ![Ingame Real](img-for-README/real-ingame.gif) | ![Ingame fake](img-for-README/fake-ingame.gif) |
+| Editing (delete) | ![Edit Real](img-for-README/real-Edit.gif) | ![Edit Real](img-for-README/fake-Edit.gif) |
+
+## TheAquaila Rich-Presence
+
+| State | Preview |
+|:--:|:-:|
+| Idle | ![Idle](img-for-README/Idle.gif) |
+| In game | ![Ingame](img-for-README/Ingame.gif) |
+| Editing | ![Edit](img-for-README/Edit.gif) |
+| Spectating | ![Spectating](img-for-README/Spec.gif) |
+
+## Surface
+
+| Preview |
+|:--:|
+| ![Surface](img-for-README/Surface.gif) |
+
 
 # How to use
 
@@ -51,6 +76,6 @@ I don't use Linux. If you are all using Linux, building python should not be dif
 # WIP
 - [ ] Support AQN replay editor.
 - [x] Identify in-game beatmap edit.
-- [ ] Custom text.
-- [ ] Disable display server.
-- [ ] Python GUI(?)
+- [x] Custom text.
+- [x] Disable display server.
+- [x] Python GUI
