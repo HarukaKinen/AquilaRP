@@ -75,7 +75,7 @@ def getActive():
         if keyword_full in str(tittle):
             if ".osu" in str(tittle):
                 state = tittle.replace("osu!  - ", "").replace(".osu", "")
-                currentactive = "edit"
+                current_active = "edit"
             else:
                 state = tittle.replace("osu!  - ", "")
                 current_active = "play"
@@ -164,26 +164,28 @@ def fake_Active():
 
     if mode == "osu!":
         mode_int = "0"
+        mode_active = "Clicking circles"
     if mode == "osu!taiko":
         mode_int = "1"
+        mode_active = "Bashing drums"
     if mode == "osu!catch":
         mode_int = "2"
+        mode_active = "Catching fruit"
     if mode == "osu!mania":
         mode_int = "3"
+        mode_active = "Smashing keys"
 
     if osu_run:
         if state == "AFK" or state == "Idle":
             RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
         else:
             if current_active == "play":
-                active = "Clicking circles"
-                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode, spectate = "any")
+                RPC_osu.update(details = state, state = mode_active, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode, spectate = "any")
             elif current_active == "edit":
                 active = "Modding a Beatmap"
-                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+                RPC_osu.update(details = state, state = active, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
             elif current_active == "spectate":
-                active = "Spectating ?"
-                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+                RPC_osu.update(details = "Idle", large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
     else:
         RPC_osu.clear()
         RPC_aqn.clear()
