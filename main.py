@@ -5,44 +5,47 @@ import requests
 import time
 import sys
 import os
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QTimer
 from GUI import Ui_MainWindow as UIM
+
 
 class NewUiMainWindow(UIM):
     def setupFunction(self):
-        self.my_thread = MyThread()
-        self.my_thread.start()
-        self.enable_aqn.clicked.connect(self.ApplyAQNSetting)
-        self.enable_fake.clicked.connect(self.ApplyFakeSetting)
-        self.disable_aqn.clicked.connect(self.disable_rpc)
-        self.disable_fake.clicked.connect(self.disable_rpc)
+        self.Checktimer, self.AQNtimer, self.Faketimer = QTimer(), QTimer(), QTimer()
+        self.Checktimer.timeout.connect(self.check_osu)
+        self.Checktimer.start(1000)
 
-    def disable_rpc(self):
-        pass
+        self.AQNtimer.timeout.connect(self.ApplyAQNSetting)
+        self.Faketimer.timeout.connect(self.ApplyFakeSetting)
+
+        self.enable_aqn.clicked.connect(lambda: self.AQNtimer.start(1000))
+        self.enable_fake.clicked.connect(lambda: self.Faketimer.start(1000))
+        self.disable_aqn.clicked.connect(self.stopRPC)
+        self.disable_fake.clicked.connect(self.stopRPC)
+
+    def stopRPC(self):
+        self.AQNtimer.stop()
+        self.Faketimer.stop()
+        RPC_aqn.clear()
+        RPC_osu.clear()
+
+    def check_osu(self):  # aka Debug place
+        check_exsit("osu!.exe")
 
     def ApplyAQNSetting(self):
-        pass
+        aqn_Active()
 
     def ApplyFakeSetting(self):
-        pass
-
-class MyThread(QThread):
-    def __init__(self):
-        super(MyThread, self).__init__()
-        self.count = 0
-
-    def run(self):
-        while True:
-            check_exsit("osu!.exe")
-            time.sleep(3)
+        fake_Active()
 
 
-osu_close = False
-gameOpend = False
+ui = NewUiMainWindow()
+
 state = any
 current_active = any
+osu_close = False
+gameOpend = False
 
 client_id_osu = "367827983903490050"
 RPC_osu = Presence(client_id_osu)
@@ -52,6 +55,7 @@ client_id_aqn = "707510270771068945"
 RPC_aqn = Presence(client_id_aqn)
 RPC_aqn.connect()
 
+
 def read_hosts():
     path = 'C:\Windows\System32\drivers\etc'
     os.chdir(path)
@@ -59,6 +63,7 @@ def read_hosts():
     with open(file, 'r') as fs:
         data = fs.readlines()
     return data
+
 
 def getActive():
     global state
@@ -86,6 +91,7 @@ def getActive():
         state = "AFK"
     return state, current_active
 
+
 def check_server():
     datas = read_hosts()
     if "ppy.sh" in str(datas):
@@ -107,34 +113,81 @@ def check_server():
         server = "bancho"
     return server
 
-def aqn_Active():
-    state, current_active = getActive()
-    server = check_server()
-    if state == "AFK" or state == "Idle":
-        RPC_aqn.update(details = state, large_image= "aqn", large_text="TheAquila Client", small_image = server, small_text = f"Playing on {server} server")
-    else:
-        if current_active == "play":
-            active = "Getting good"
-        elif current_active == "edit":
-            active = "Resolving beatmap"
-        elif current_active == "spectate":
-            active = "Get good"
-        RPC_aqn.update(details = state, state = active, large_image="aqn", large_text="TheAquila Cilent", small_image = server, small_text = f"Playing on {server} server")
 
-def fake_setActive():
+def aqn_Active():
+    osu_run = check_exsit("osu!.exe")
     state, current_active = getActive()
-    if state == "AFK" or state == "Idle":
-        RPC_osu.update(details = state, large_image= "osu_logo", large_text=f"username (rank #rank)", small_image = "mode_0", small_text = "osu")
+    if ui.server_enable.isChecked():  # enable写反了 呵呵
+        server_disable = True
+        print(ui.server_enable.isChecked())
+        print("1")
     else:
-        if current_active == "play":
-            active = "Clicking circles"
-            RPC_osu.update(details = state, large_image= "osu_logo", large_text=f"username (rank #rank)", small_image = "mode_0", small_text = "osu", spectate = "any")
-        elif current_active == "edit":
-            active = "Modding a Beatmap"
-            RPC_osu.update(details = state, large_image= "osu_logo", large_text=f"username (rank #rank)", small_image = "mode_0", small_text = "osu")
-        elif current_active == "spectate":
-            active = "Spectating ?"
-            RPC_osu.update(details = state, large_image= "osu_logo", large_text=f"username (rank #rank)", small_image = "mode_0", small_text = "osu")
+        print(ui.server_enable.isChecked())
+        print("0")
+        server_disable = False
+    if server_disable:
+        server_name = None
+        server = None
+    else:
+        server_name = check_server()
+        print(server_name)
+        server = f"Playing on {server_name} server"
+    if osu_run:
+        if state == "AFK" or state == "Idle":
+            RPC_aqn.update(details = state, large_image = "aqn", large_text = "TheAquila Client", small_image = server_name, small_text = server)
+        else:
+            if current_active == "play":
+                active = "Getting good"
+            elif current_active == "edit":
+                active = "Resolving beatmap"
+            elif current_active == "spectate":
+                active = "Get good"
+            RPC_aqn.update(details = state, state = active, large_image = "aqn", large_text = "TheAquila Cilent", small_image = server_name, small_text = server)
+    else:
+        RPC_aqn.clear()
+
+
+def fake_Active():
+    state, current_active = getActive()
+    osu_run = check_exsit("osu!.exe")
+    mode = str(ui.mod_combobox.currentText())
+
+    if ui.username_input.text() != "":
+        username = ui.username_input.text()
+        if ui.rank_input.text() !="":
+            rank = ui.rank_input.text()
+            userinfo = f"{username} (rank #{rank})"
+        else:
+            userinfo = f"{username}"
+    else:
+        userinfo = None
+
+    if mode == "osu!":
+        mode_int = "0"
+    if mode == "osu!taiko":
+        mode_int = "1"
+    if mode == "osu!catch":
+        mode_int = "2"
+    if mode == "osu!mania":
+        mode_int = "3"
+
+    if osu_run:
+        if state == "AFK" or state == "Idle":
+            RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+        else:
+            if current_active == "play":
+                active = "Clicking circles"
+                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode, spectate = "any")
+            elif current_active == "edit":
+                active = "Modding a Beatmap"
+                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+            elif current_active == "spectate":
+                active = "Spectating ?"
+                RPC_osu.update(details = state, large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
+    else:
+        RPC_osu.clear()
+        RPC_aqn.clear()
+
 
 def check_exsit(process_name):
     global osu_close
@@ -149,6 +202,8 @@ def check_exsit(process_name):
             gameOpend = True
     else:
         osu_run = False
+        RPC_aqn.clear()
+        RPC_osu.clear()
         if osu_run != True and osu_close != True and gameOpend == True:
             print("osu!.exe closed")
             osu_close = True
@@ -158,6 +213,7 @@ def check_exsit(process_name):
             osu_close = True
             gameOpend = False
     return osu_run
+
 
 def check_update():
     version = "1.0.1"
@@ -170,12 +226,12 @@ def check_update():
         else:
             print(f"The {version} is the latest release in Github!")
     except:
-        print("Get release failed.")
+        print("Get latest release failed.")
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = NewUiMainWindow()
     ui.setupUi(MainWindow)
     ui.setupFunction()
     MainWindow.show()
