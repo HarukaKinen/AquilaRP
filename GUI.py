@@ -94,7 +94,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Aquaila Rich-Presence"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Aquila Rich-Presence"))
         self.server_enable.setText(_translate("MainWindow", "Disable servers name"))
         self.enable_aqn.setText(_translate("MainWindow", "Start Presence"))
         self.disable_aqn.setText(_translate("MainWindow", "Stop Rich Presence"))
