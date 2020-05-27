@@ -42,7 +42,7 @@ Prerequisites:
 
 1. Any `clone` method you want to use
 2. Make you own big brain code here.
-3. Open `cmd` and run `pyinstaller -F main.py` in cmd folder.
+3. Open `cmd` and run `pyinstaller -F main.py` in main folder.
 
 **Linux**
 
