@@ -119,18 +119,13 @@ def aqn_Active():
     state, current_active = getActive()
     if ui.server_enable.isChecked():  # enable写反了 呵呵
         server_disable = True
-        print(ui.server_enable.isChecked())
-        print("1")
     else:
-        print(ui.server_enable.isChecked())
-        print("0")
         server_disable = False
     if server_disable:
         server_name = None
         server = None
     else:
         server_name = check_server()
-        print(server_name)
         server = f"Playing on {server_name} server"
     if osu_run:
         if state == "AFK" or state == "Idle":
