@@ -12,29 +12,21 @@ from GUI import Ui_MainWindow as UIM
 
 class NewUiMainWindow(UIM):
     def setupFunction(self):
-        self.Checktimer, self.AQNtimer, self.Faketimer = QTimer(), QTimer(), QTimer()
+        self.Checktimer, self.Faketimer = QTimer(), QTimer()
         self.Checktimer.timeout.connect(self.check_osu)
         self.Checktimer.start(1000)
 
-        self.AQNtimer.timeout.connect(self.ApplyAQNSetting)
         self.Faketimer.timeout.connect(self.ApplyFakeSetting)
 
-        self.enable_aqn.clicked.connect(lambda: self.AQNtimer.start(1000))
         self.enable_fake.clicked.connect(lambda: self.Faketimer.start(1000))
-        self.disable_aqn.clicked.connect(self.stopRPC)
         self.disable_fake.clicked.connect(self.stopRPC)
 
     def stopRPC(self):
-        self.AQNtimer.stop()
         self.Faketimer.stop()
-        RPC_aqn.clear()
         RPC_osu.clear()
 
     def check_osu(self):  # aka Debug place
         check_exsit("osu!.exe")
-
-    def ApplyAQNSetting(self):
-        aqn_Active()
 
     def ApplyFakeSetting(self):
         fake_Active()
@@ -47,14 +39,23 @@ current_active = any
 osu_close = False
 gameOpend = False
 
+
 client_id_osu = "367827983903490050"
 RPC_osu = Presence(client_id_osu)
 RPC_osu.connect()
 
-client_id_aqn = "707510270771068945"
-RPC_aqn = Presence(client_id_aqn)
-RPC_aqn.connect()
-
+def parse_int(num):
+    to_str=str(num) #转换成字符串
+    count=0 #循环计数
+    sumstr='' #待拼接的字符串
+    for one_str in to_str[::-1]: #注意循环是倒着输出的
+        count += 1 #计数
+        if count %3==0 and count != len(to_str): #如果count等于3或3的倍数并且不等于总长度
+            one_str = ',' + one_str # 当前循环的字符串前面加逗号
+            sumstr = one_str + sumstr #拼接当前字符串
+        else:
+            sumstr = one_str + sumstr #正常拼接字符串
+    return sumstr #返回拼接的字符串
 
 def read_hosts():
     path = 'C:\Windows\System32\drivers\etc'
@@ -91,57 +92,6 @@ def getActive():
         state = "AFK"
     return state, current_active
 
-
-def check_server():
-    datas = read_hosts()
-    if "ppy.sh" in str(datas):
-        if "163.172.255.98" in str(datas):
-            server = "gatari"
-        elif "159.65.235.81" in str(datas):
-            server = "akatsuki"
-        elif "88.198.32.213" in str(datas):
-            server = "kawata"
-        elif "51.15.26.118" in str(datas):
-            server = "ripple"
-        elif "194.34.133.95" in str(datas):
-            server = "ainu"
-        # elif "47.89.44.19" in str(datas):
-        #     server = "ppy.sb"
-        else:
-            server = "unknown"
-    else:
-        server = "bancho"
-    return server
-
-
-def aqn_Active():
-    osu_run = check_exsit("osu!.exe")
-    state, current_active = getActive()
-    if ui.server_enable.isChecked():  # enable写反了 呵呵
-        server_disable = True
-    else:
-        server_disable = False
-    if server_disable:
-        server_name = None
-        server = None
-    else:
-        server_name = check_server()
-        server = f"Playing on {server_name} server"
-    if osu_run:
-        if state == "AFK" or state == "Idle":
-            RPC_aqn.update(details = state, large_image = "aqn", large_text = "TheAquila Client", small_image = server_name, small_text = server)
-        else:
-            if current_active == "play":
-                active = "Getting good"
-            elif current_active == "edit":
-                active = "Resolving beatmap"
-            elif current_active == "spectate":
-                active = "Get good"
-            RPC_aqn.update(details = state, state = active, large_image = "aqn", large_text = "TheAquila Cilent", small_image = server_name, small_text = server)
-    else:
-        RPC_aqn.clear()
-
-
 def fake_Active():
     state, current_active = getActive()
     osu_run = check_exsit("osu!.exe")
@@ -151,6 +101,10 @@ def fake_Active():
         username = ui.username_input.text()
         if ui.rank_input.text() !="":
             rank = ui.rank_input.text()
+            if "," not in rank:
+                rank = parse_int(rank)
+            else:
+                rank = ui.rank_input.text()
             userinfo = f"{username} (rank #{rank})"
         else:
             userinfo = f"{username}"
@@ -182,8 +136,6 @@ def fake_Active():
                 RPC_osu.update(details = "Idle", large_image = "osu_logo", large_text = userinfo, small_image = f"mode_{mode_int}", small_text = mode)
     else:
         RPC_osu.clear()
-        RPC_aqn.clear()
-
 
 def check_exsit(process_name):
     global osu_close
@@ -192,13 +144,12 @@ def check_exsit(process_name):
     processCodeCov = WMI.ExecQuery('select * from Win32_Process where Name="%s"' % process_name)
     if len(processCodeCov) > 0:
         osu_run = True
-        if osu_run == True and osu_close == True and gameOpend != True:
+        if osu_run == False and osu_close == True and gameOpend != True:
             print("osu!.exe has been detected")
             osu_close = False
             gameOpend = True
     else:
         osu_run = False
-        RPC_aqn.clear()
         RPC_osu.clear()
         if osu_run != True and osu_close != True and gameOpend == True:
             print("osu!.exe closed")
@@ -212,17 +163,9 @@ def check_exsit(process_name):
 
 
 def check_update():
-    version = "2.0.0"
-    try:
-        r = requests.get('https://api.github.com/repos/Kotoki1337/AquilaRP/releases/latest')
-        latest = r.json()["tag_name"]
-        print(f"Version: {version}\nhttps://github.com/Kotoki1337/AquilaRP")
-        if latest != version:
-            print("There is a new release on Github!")
-        else:
-            print(f"The {version} is the latest release in Github!")
-    except:
-        print("Get latest release failed.")
+    version = "2.0.0-MPGH-Release"
+    Author = "UID-5514764"
+    print(f"Version: {version} by {Author}")
 
 
 if __name__ == "__main__":
