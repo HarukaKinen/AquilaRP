@@ -29,16 +29,7 @@ AquilaRP will not display any ign, only show the beatmap you are currently playi
 |:--:|:-:|:-:|
 | Idle/AFK | ![Idle Real](img-for-README/real-Idle.gif) | ![Idle Real](img-for-README/fake-Idle.gif) |
 | In game | ![Ingame Real](img-for-README/real-ingame.gif) | ![Ingame fake](img-for-README/fake-ingame.gif) |
-| Editing (delete) | ![Edit Real](img-for-README/real-Edit.gif) | ![Edit Real](img-for-README/fake-Edit.gif) |
-
-## TheAquaila Rich-Presence
-
-| State | Preview |
-|:--:|:-:|
-| Idle | ![Idle](img-for-README/Idle.gif) |
-| In game | ![Ingame](img-for-README/Ingame.gif) |
-| Editing | ![Edit](img-for-README/Edit.gif) |
-| Spectating | ![Spectating](img-for-README/Spec.gif) |
+| Editing (delete) | ![Edit Real](img-for-README/real-Edit.gif) | ![Edit Real](img-for-README/fake-Edit.gif) ||
 
 ## Surface
 
