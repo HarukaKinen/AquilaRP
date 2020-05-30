@@ -31,7 +31,6 @@ class NewUiMainWindow(UIM):
     def ApplyFakeSetting(self):
         fake_Active()
 
-
 ui = NewUiMainWindow()
 
 state = any
@@ -71,21 +70,51 @@ def getActive():
     global current_active
     tittle = gw.getActiveWindowTitle()
     keyword = "osu!"
+    keyword_beta = "osu!beta"
+    keyword_cedge = "osu!cuttingedge b"
     keyword_full = "osu!  - "
+    keyword_beta_full = "osu!beta  - "
+    keyword_cedge_full = " - "
     if keyword in str(tittle):
-        if keyword_full in str(tittle):
+        if keyword_beta in str(tittle):
+            client_version = "beta"
+        elif keyword_cedge in str(tittle):
+            client_version = "cedge"
+        else:
+            client_version = "stb"
+    else:
+        client_version = "not osu"
+    print(client_version)
+    if client_version == "stb" or client_version == "beta":
+        if keyword_full in str(tittle) or keyword_beta_full in str(tittle):
             if ".osu" in str(tittle):
-                state = tittle.replace("osu!  - ", "").replace(".osu", "")
+                state = tittle.split('  - ', 1)[-1].replace(".osu", "")
                 current_active = "edit"
             else:
-                state = tittle.replace("osu!  - ", "")
+                state = tittle.split('  - ', 1)[-1]
                 current_active = "play"
         else:
             state = "Idle"
-        if state == "osu!":
+        if state == "osu!" or state == "osu!beta":
             state = "Idle"
-        elif "watching" in state:
-            specname = tittle.replace("osu!  -  (watching ", "").replace(")", "")
+        elif "(watching" in state:
+            specname = tittle.split('  -  ', 1)[-1].replace("(watching ", "").replace(")", "")
+            state = f"Spectating {specname}"
+            current_active = "spectate"
+    elif client_version == "cedge":
+        if keyword_cedge in str(tittle) and keyword_cedge_full in str(tittle):
+            if ".osu" in str(tittle):
+                state = tittle.split(' - ', 1)[-1].replace(".osu", "")
+                current_active = "edit"
+            else:
+                state = tittle.split(' - ', 1)[-1]
+                current_active = "play"
+        else:
+            state = "Idle"
+        if state == "osu!" or state == "osu!beta":
+            state = "Idle"
+        elif "(watching" in state:
+            specname = tittle.split(' -  ', 1)[-1].replace("(watching ", "").replace(")", "")
             state = f"Spectating {specname}"
             current_active = "spectate"
     else:
@@ -143,14 +172,12 @@ def check_exsit(process_name):
     WMI = win32com.client.GetObject('winmgmts:')
     processCodeCov = WMI.ExecQuery('select * from Win32_Process where Name="%s"' % process_name)
     if len(processCodeCov) > 0:
+        print("osu!.exe has been detected")
         osu_run = True
-        if osu_run == False and osu_close == True and gameOpend != True:
-            print("osu!.exe has been detected")
-            osu_close = False
-            gameOpend = True
+        osu_close = False
+        gameOpend = True
     else:
         osu_run = False
-        RPC_osu.clear()
         if osu_run != True and osu_close != True and gameOpend == True:
             print("osu!.exe closed")
             osu_close = True
@@ -160,7 +187,6 @@ def check_exsit(process_name):
             osu_close = True
             gameOpend = False
     return osu_run
-
 
 def check_update():
     version = "2.0.0-MPGH-Release"
