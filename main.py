@@ -189,7 +189,7 @@ def check_exsit(process_name):
     return osu_run
 
 def check_update():
-    version = "2.0.0-MPGH-Release"
+    version = "2.1.0-MPGH-Release"
     Author = "UID-5514764"
     print(f"Version: {version} by {Author}")
 
