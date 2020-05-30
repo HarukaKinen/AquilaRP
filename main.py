@@ -35,7 +35,7 @@ ui = NewUiMainWindow()
 
 state = any
 current_active = any
-osu_close = False
+osu_closed = False
 gameOpend = False
 
 
@@ -72,6 +72,8 @@ def getActive():
     keyword = "osu!"
     keyword_beta = "osu!beta"
     keyword_cedge = "osu!cuttingedge b"
+    keyword_updater = "osu! updater"
+    keyword_configuration = "osu! configuration"
     keyword_full = "osu!  - "
     keyword_beta_full = "osu!beta  - "
     keyword_cedge_full = " - "
@@ -80,11 +82,14 @@ def getActive():
             client_version = "beta"
         elif keyword_cedge in str(tittle):
             client_version = "cedge"
+        elif keyword_updater in str(tittle):
+            client_version = "updater"
+        elif keyword_configuration in str(tittle):
+            client_version = "configuration"
         else:
             client_version = "stb"
     else:
         client_version = "not osu"
-    print(client_version)
     if client_version == "stb" or client_version == "beta":
         if keyword_full in str(tittle) or keyword_beta_full in str(tittle):
             if ".osu" in str(tittle):
@@ -122,8 +127,8 @@ def getActive():
     return state, current_active
 
 def fake_Active():
-    state, current_active = getActive()
     osu_run = check_exsit("osu!.exe")
+    state, current_active = getActive()
     mode = str(ui.mod_combobox.currentText())
 
     if ui.username_input.text() != "":
@@ -167,24 +172,25 @@ def fake_Active():
         RPC_osu.clear()
 
 def check_exsit(process_name):
-    global osu_close
+    global osu_closed
     global gameOpend
     WMI = win32com.client.GetObject('winmgmts:')
     processCodeCov = WMI.ExecQuery('select * from Win32_Process where Name="%s"' % process_name)
     if len(processCodeCov) > 0:
-        print("osu!.exe has been detected")
         osu_run = True
-        osu_close = False
-        gameOpend = True
+        if osu_run == True and gameOpend != True:
+            print("osu!.exe has been detected")
+            osu_closed = False
+            gameOpend = True
     else:
         osu_run = False
-        if osu_run != True and osu_close != True and gameOpend == True:
+        if osu_run != True and osu_closed != True and gameOpend == True:
             print("osu!.exe closed")
-            osu_close = True
+            osu_closed = True
             gameOpend = False
-        elif osu_run != True and osu_close != True and gameOpend != True:
+        elif osu_run != True and osu_closed != True and gameOpend != True:
             print("osu!.exe cannot be detect")
-            osu_close = True
+            osu_closed = True
             gameOpend = False
     return osu_run
 
