@@ -2,7 +2,7 @@
 
 > A python script that provides a Discord Rich Presence description for osu! but it's AQN.
 
-[![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence) [![license](https://img.shields.io/github/license/qwertyquerty/pypresence.svg?style=for-the-badge)](https://github.com/Kotoki1337/AquilaRP/blob/master/LICENSE)
+[![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence) [![license](https://img.shields.io/github/license/Kotoki1337/AquilaRP.svg?style=for-the-badge)](https://github.com/Kotoki1337/AquilaRP/blob/master/LICENSE)
 
 ## Hows it Work
 
